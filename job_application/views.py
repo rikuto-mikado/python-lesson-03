@@ -7,6 +7,9 @@ from .models import Form
 # Django's messaging framework - displays temporary notifications to users (success, error, warning, etc.)
 from django.contrib import messages
 
+# EmailMessage class for sending emails with optional attachments and custom headers
+from django.core.mail import EmailMessage
+
 
 def index(request):
     if request.method == "POST":
@@ -29,6 +32,15 @@ def index(request):
                 date=date,
                 occupation=occupation,
             )
+
+            message_body = (
+                f"A new job application was submitted, thank you {first_name}"
+            )
+            email_message = EmailMessage(
+                "Form submission confirmation", message_body, to=[email]
+            )
+            email_message.send()
+
             messages.success(request, "Application submitted successfully!")
     # request is required to generate HttpResponse and make request data available in templates
     return render(request, "index.html")
