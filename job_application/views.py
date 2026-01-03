@@ -44,3 +44,7 @@ def index(request):
             messages.success(request, "Application submitted successfully!")
     # request is required to generate HttpResponse and make request data available in templates
     return render(request, "index.html")
+
+
+def about(request):
+    return render(request, "about.html")
