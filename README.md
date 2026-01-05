@@ -24,10 +24,6 @@ EMAIL_HOST_USER=
 EMAIL_HOST_PASSWORD=
 ```
 
-**Note**: Use quotes for values containing `#` or special characters.
-
-**Gmail**: Generate an [App Password](https://support.google.com/accounts/answer/185833) (requires 2FA).
-
 ### 3. Run Server
 ```bash
 python manage.py runserver
@@ -101,3 +97,64 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"  # string → bool
 | `EMAIL_HOST` | Yes | Flexibility (different services) |
 | `EMAIL_PORT` | Yes | Service-specific configuration |
 | `DEFAULT_AUTO_FIELD` | No | Static Django setting |
+
+## Template Syntax and Debugging
+
+### What I Learned
+
+**Django Template Syntax**
+- Correct template tag syntax uses `{% %}` for logic and `{{ }}` for variables
+- Common tags: `{% extends %}`, `{% block %}`, `{% endblock %}`, `{% csrf_token %}`
+
+```django
+<!-- Correct -->
+{% block content %}
+{% endblock %}
+
+<!-- Incorrect -->
+{<% block content %>}
+{<% endblock %>}
+```
+
+**Template Error Debugging**
+| Error Type | Symptom | Solution |
+|------------|---------|----------|
+| `TemplateSyntaxError: Unclosed tag` | Server returns 500 error | Check all `{% block %}` have matching `{% endblock %}` |
+| Incorrect delimiter | Template not rendering | Replace `{<% %>}` with `{% %}` |
+| Encoding issues | Character display problems | Use `charset="utf-8"` (not `uft-8`) |
+
+**Code Consistency**
+- Maintain consistent indentation (4 spaces per level in HTML/Django templates)
+- Fix syntax errors in base templates first (they cascade to child templates)
+
+### Challenges Encountered
+
+**1. Template Delimiter Confusion**
+**Problem**: Mixed up template syntax delimiters `{<% %>}` instead of `{% %}`
+```django
+<!-- Wrong -->
+{<% block content %>}
+{<% endblock %>}
+```
+
+**Solution**: Use correct Django template syntax
+```django
+<!-- Correct -->
+{% block content %}
+{% endblock %}
+```
+
+**2. Cascading Template Errors**
+**Problem**: Errors in `base.html` affected all pages extending it
+- Fixed `base.html` first (parent template)
+- Then fixed `index.html` (child template)
+
+**3. Character Encoding Typo**
+**Problem**: `charset="uft-8"` caused potential encoding issues
+
+**Solution**: Corrected to `charset="utf-8"`
+
+---
+
+### Session Notes
+Fixed Django template syntax errors across multiple files. Corrected delimiter syntax from `{<% %>}` to `{% %}` in both base.html and index.html templates. Also fixed character encoding typo (`uft-8` → `utf-8`) and normalized HTML indentation. Template inheritance errors in parent templates cascade to all child templates, requiring systematic debugging from base templates first.
